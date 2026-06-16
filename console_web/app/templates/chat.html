@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>跨境电商智能客服处理台</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background: #eef3f8;
+            color: #1f2937;
+        }
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            height: 80px;
+            background: linear-gradient(135deg, #1554c0, #0f766e);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.22);
+        }
+
+        .brand-title {
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-subtitle {
+            margin-top: 6px;
+            font-size: 13px;
+            opacity: 0.92;
+        }
+
+        .top-status {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .status-pill {
+            padding: 9px 13px;
+            background: rgba(255,255,255,0.16);
+            border: 1px solid rgba(255,255,255,0.28);
+            border-radius: 999px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .workspace {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 280px minmax(560px, 1fr) 390px;
+            gap: 18px;
+            padding: 18px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 6px;
+        }
+
+        .small-muted {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .scene-card {
+            padding: 14px;
+            border-radius: 15px;
+            border: 1px solid #e5e7eb;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .scene-card:hover {
+            transform: translateY(-1px);
+            border-color: #60a5fa;
+            background: #eff6ff;
+        }
+
+        .scene-card.active {
+            background: #dbeafe;
+            border-color: #2563eb;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.15);
+        }
+
+        .scene-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .scene-desc {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 14px;
+            background: #f0fdfa;
+            border: 1px solid #99f6e4;
+            border-radius: 15px;
+            color: #115e59;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .main-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .task-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .task-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .copy-btn,
+        .clear-chat-btn {
+            border: none;
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .copy-btn {
+            background: #0f766e;
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background: #115e59;
+        }
+
+        .clear-chat-btn {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .clear-chat-btn:hover {
+            background: #d1d5db;
+        }
+
+        .task-dashboard {
+            padding: 14px 22px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dashboard-card {
+            border: 1px solid #e5e7eb;
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .dashboard-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .dashboard-value {
+            font-size: 14px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+
+        .workflow {
+            padding: 14px 22px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .step {
+            padding: 11px 10px;
+            border-radius: 13px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .step strong {
+            display: block;
+            color: #0f172a;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .step.active {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .quick-area {
+            padding: 14px 22px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .quick-btn {
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            padding: 8px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .quick-btn:hover {
+            background: #eff6ff;
+            border-color: #2563eb;
+            color: #1d4ed8;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 22px;
+            overflow-y: auto;
+            background: #f8fafc;
+            min-height: 360px;
+        }
+
+        .empty-guide {
+            background: #fff;
+            border: 1px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 18px;
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 18px;
+        }
+
+        .message-row {
+            display: flex;
+            margin-bottom: 16px;
+        }
+
+        .message-row.user {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 78%;
+            padding: 13px 15px;
+            border-radius: 16px;
+            line-height: 1.75;
+            font-size: 14px;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        .message-row.user .message-bubble {
+            background: #2563eb;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-row.assistant .message-bubble {
+            background: white;
+            color: #111827;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-label {
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            opacity: 0.86;
+        }
+
+        .loading {
+            display: none;
+            padding: 10px 22px;
+            font-size: 13px;
+            background: #f8fafc;
+            color: #475569;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid #2563eb;
+            border-radius: 50%;
+            vertical-align: middle;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .input-area {
+            padding: 16px 22px;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+        }
+
+        .message-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 13px 15px;
+            border-radius: 13px;
+            border: 1px solid #cbd5e1;
+            outline: none;
+            font-size: 14px;
+        }
+
+        #user-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+        }
+
+        #send-btn {
+            width: 88px;
+            border: none;
+            border-radius: 13px;
+            background: #2563eb;
+            color: white;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        #send-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .right-section {
+            padding: 17px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .help-box {
+            padding: 12px;
+            border-radius: 13px;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .form-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 5px;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            padding: 10px 11px;
+            outline: none;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .form-field textarea {
+            min-height: 78px;
+            resize: vertical;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15,118,110,0.1);
+        }
+
+        .primary-btn {
+            width: 100%;
+            margin-top: 12px;
+            border: none;
+            border-radius: 13px;
+            padding: 12px;
+            background: #0f766e;
+            color: white;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .primary-btn:hover {
+            background: #115e59;
+        }
+
+        .secondary-btn {
+            width: 100%;
+            margin-top: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 13px;
+            padding: 11px;
+            background: #ffffff;
+            color: #334155;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .secondary-btn:hover {
+            background: #f8fafc;
+        }
+
+        .kb-section {
+            padding: 17px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .upload-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        #kb-file-input {
+            width: 100%;
+            font-size: 12px;
+        }
+
+        .kb-status {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .operation-log {
+            flex: 1;
+            padding: 17px;
+            overflow-y: auto;
+            background: #fbfdff;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .log-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .clear-log-btn {
+            border: none;
+            background: #e5e7eb;
+            color: #374151;
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .clear-log-btn:hover {
+            background: #d1d5db;
+        }
+
+        .log-entry {
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 11px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .log-title {
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .log-content {
+            color: #64748b;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .log-timestamp {
+            color: #94a3b8;
+            font-size: 10px;
+            margin-top: 5px;
+        }
+
+        .pending-action-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            background: rgba(15,23,42,0.55);
+        }
+
+        .modal-content {
+            width: 520px;
+            max-width: calc(100% - 40px);
+            margin: 12vh auto;
+            padding: 24px;
+            border-radius: 18px;
+            background: white;
+            box-shadow: 0 18px 50px rgba(15,23,42,0.25);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .approve-btn,
+        .reject-btn {
+            border: none;
+            border-radius: 11px;
+            padding: 10px 15px;
+            color: white;
+            cursor: pointer;
+            font-weight: 800;
+        }
+
+        .approve-btn { background: #16a34a; }
+        .reject-btn { background: #dc2626; }
+
+        @media (max-width: 1200px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sidebar-bottom {
+                display: none;
+            }
+
+            .task-dashboard,
+            .workflow {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 720px) {
+            .topbar {
+                height: auto;
+                padding: 18px;
+                align-items: flex-start;
+                gap: 14px;
+                flex-direction: column;
+            }
+
+            .top-status {
+                flex-wrap: wrap;
+            }
+
+            .workspace {
+                min-height: auto;
+                padding: 12px;
+            }
+
+            .sidebar,
+            .task-dashboard,
+            .workflow {
+                grid-template-columns: 1fr;
+            }
+
+            .main-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .copy-btn,
+            .clear-chat-btn {
+                flex: 1;
+            }
+
+            .message-bubble {
+                max-width: 92%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app">
+    <header class="topbar">
+        <div>
+            <div class="brand-title">跨境电商智能客服处理台</div>
+            <div class="brand-subtitle">面向商品申诉、证书误判、商品页面检查、客户回复的智能处理系统</div>
+        </div>
+        <div class="top-status">
+            <div class="status-pill">场景化处理</div>
+            <div class="status-pill">知识库参考</div>
+            <div class="status-pill">可复制结果</div>
+        </div>
+    </header>
+
+    <main class="workspace">
+        <aside class="sidebar card">
+            <div>
+                <div class="section-title">业务场景中心</div>
+                <div class="small-muted">选择不同模块后，中间问答、快捷问题和右侧材料表单都会切换。</div>
+            </div>
+
+            <div class="scene-card active" onclick="selectScene(this, 'general')">
+                <div class="scene-name">智能问答</div>
+                <div class="scene-desc">适合直接咨询商品、平台提示、售后沟通等问题。</div>
+            </div>
+
+            <div class="scene-card" onclick="selectScene(this, 'appeal')">
+                <div class="scene-name">商品申诉处理</div>
+                <div class="scene-desc">适合商品被限制、下架、要求补充资料时使用。</div>
+            </div>
+
+            <div class="scene-card" onclick="selectScene(this, 'certificate')">
+                <div class="scene-name">证书误判分析</div>
+                <div class="scene-desc">适合成人商品被误判为儿童玩具、被要求提交证书。</div>
+            </div>
+
+            <div class="scene-card" onclick="selectScene(this, 'page')">
+                <div class="scene-name">商品页面检查</div>
+                <div class="scene-desc">检查标题、五点描述、详情页是否有高风险表达。</div>
+            </div>
+
+            <div class="scene-card" onclick="selectScene(this, 'email')">
+                <div class="scene-name">平台沟通邮件</div>
+                <div class="scene-desc">生成平台沟通、人工复核、申诉补充说明邮件。</div>
+            </div>
+
+            <div class="scene-card" onclick="selectScene(this, 'afterSale')">
+                <div class="scene-name">售后回复助手</div>
+                <div class="scene-desc">处理退款、破损、差评、物流延迟等售后场景。</div>
+            </div>
+
+            <div class="sidebar-bottom">
+                展示重点：这不是普通聊天框，而是“业务场景 + 材料表单 + 知识库参考 + 处理记录”的客服处理台。
+            </div>
+        </aside>
+
+        <section class="main-panel card">
+            <div class="main-header">
+                <div>
+                    <div class="task-title" id="task-title">智能客服问答</div>
+                    <div class="task-subtitle" id="task-subtitle">你可以直接输入平台提示、商品问题或客户消息，系统会自动判断处理方向。</div>
+                </div>
+                <div class="header-actions">
+                    <button class="clear-chat-btn" onclick="clearChatMessages()">清空对话</button>
+                    <button class="copy-btn" onclick="copyLastAnswer()">复制最后回复</button>
+                </div>
+            </div>
+
+            <div class="task-dashboard">
+                <div class="dashboard-card">
+                    <div class="dashboard-label">当前业务模块</div>
+                    <div class="dashboard-value" id="dashboard-scene">智能问答</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="dashboard-label">建议处理动作</div>
+                    <div class="dashboard-value" id="dashboard-action">先描述问题，再生成处理建议</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="dashboard-label">输出类型</div>
+                    <div class="dashboard-value" id="dashboard-output">分析建议 / 回复草稿</div>
+                </div>
+            </div>
+
+            <div class="workflow">
+                <div class="step active">
+                    <strong>1. 选择场景</strong>
+                    申诉、证书、页面、邮件或售后
+                </div>
+                <div class="step">
+                    <strong>2. 补充材料</strong>
+                    填写右侧商品和平台提示
+                </div>
+                <div class="step">
+                    <strong>3. 知识库参考</strong>
+                    可上传平台规则或案例资料
+                </div>
+                <div class="step">
+                    <strong>4. 生成结果</strong>
+                    输出建议、邮件或申诉草稿
+                </div>
+            </div>
+
+            <div class="quick-area" id="quick-area"></div>
+
+            <div id="chat-messages" class="chat-messages">
+                <div class="empty-guide" id="empty-guide">
+                    <strong>使用方式：</strong><br>
+                    先选左侧业务场景，再在右侧填写商品材料，或直接点击快捷任务。系统会自动把当前场景要求一起发给智能客服。
+                </div>
+
+            </div>
+
+            <div class="loading" id="loading-indicator">
+                <span class="spinner"></span>
+                正在分析问题并生成处理建议...
+            </div>
+
+            <div class="input-area">
+                <div class="message-input">
+                    <input type="text" id="user-input" placeholder="请输入商品问题、平台提示、申诉需求或客户消息..." />
+                    <button id="send-btn">发送</button>
+                </div>
+            </div>
+        </section>
+
+        <aside class="right-panel card">
+            <div class="right-section">
+                <div class="section-title" id="form-title">问题材料填写</div>
+                <div class="help-box" id="form-help">
+                    不懂平台术语也可以直接填写中文。重点写清楚：商品是什么、用来做什么、平台提示了什么。
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>平台商品编号（没有可不填）</label>
+                        <input id="item-number-input" type="text" placeholder="例如：后台显示的一串商品编号">
+                    </div>
+
+                    <div class="form-field">
+                        <label>商品名称</label>
+                        <input id="product-name-input" type="text" placeholder="例如：迷你树脂狮子摆件100个">
+                    </div>
+
+                    <div class="form-field">
+                        <label>商品主要用途</label>
+                        <input id="product-use-input" type="text" placeholder="例如：成人装饰、花园摆件、手工材料">
+                    </div>
+
+                    <div class="form-field">
+                        <label>适合人群或年龄</label>
+                        <select id="age-input">
+                            <option value="未说明">未说明</option>
+                            <option value="14岁以上">14岁以上</option>
+                            <option value="12岁以上">12岁以上</option>
+                            <option value="成人使用">成人使用</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label id="issue-label">平台提示或你的需求</label>
+                        <textarea id="issue-input" placeholder="例如：平台要求提供儿童产品证书，但我的商品不是儿童玩具"></textarea>
+                    </div>
+                </div>
+
+                <button class="primary-btn" id="generate-btn" onclick="generateScenePrompt()">生成问题分析</button>
+                <button class="secondary-btn" onclick="clearMaterialForm()">清空材料表单</button>
+            </div>
+
+            <div class="kb-section">
+                <div class="section-title">知识库资料上传</div>
+                <div class="help-box">
+                    可上传平台通知、申诉模板、商品资料或规则说明。建议先用 TXT / MD / CSV / JSON / HTML，PDF 和 Word 需要后端额外解析库支持。
+                </div>
+                <div class="upload-row">
+                    <input id="kb-file-input" type="file" accept=".txt,.md,.csv,.json,.html,.htm">
+                </div>
+                <button class="primary-btn" onclick="uploadKnowledgeFile()">上传到知识库</button>
+                <div class="kb-status" id="kb-status">当前未上传资料。</div>
+            </div>
+
+        </aside>
+    </main>
+</div>
+
+<div id="pending-action-modal" class="pending-action-modal">
+    <div class="modal-content">
+        <h3>操作确认</h3>
+        <p style="color:#64748b;font-size:14px;">系统检测到当前操作需要你确认，请选择是否继续。</p>
+        <div id="pending-action-details"></div>
+        <div class="modal-buttons">
+            <button class="reject-btn" onclick="rejectAction()">拒绝</button>
+            <button class="approve-btn" onclick="approveAction()">同意</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const chatMessages = document.getElementById('chat-messages');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const pendingActionModal = document.getElementById('pending-action-modal');
+    const pendingActionDetails = document.getElementById('pending-action-details');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const operationLogContent = document.getElementById('operation-log-content');
+    const quickArea = document.getElementById('quick-area');
+    const emptyGuide = document.getElementById('empty-guide');
+    const kbStatus = document.getElementById('kb-status');
+
+    const taskTitle = document.getElementById('task-title');
+    const taskSubtitle = document.getElementById('task-subtitle');
+    const formTitle = document.getElementById('form-title');
+    const formHelp = document.getElementById('form-help');
+    const issueLabel = document.getElementById('issue-label');
+    const generateBtn = document.getElementById('generate-btn');
+
+    const dashboardScene = document.getElementById('dashboard-scene');
+    const dashboardAction = document.getElementById('dashboard-action');
+    const dashboardOutput = document.getElementById('dashboard-output');
+
+    let currentScene = 'general';
+    let lastAssistantText = '';
+    let localLogCleared = false;
+
+    const sceneChats = {
+        general: [],
+        appeal: [],
+        certificate: [],
+        page: [],
+        email: [],
+        afterSale: []
+    };
+
+    const sceneConfig = {
+        general: {
+            name: '智能问答',
+            title: '智能客服问答',
+            subtitle: '直接输入平台提示、商品问题或客户消息，系统会自动判断处理方向。',
+            formTitle: '问题材料填写',
+            help: '不懂平台术语也可以直接填写中文。重点写清楚：商品是什么、用来做什么、平台提示了什么。',
+            issueLabel: '平台提示或你的需求',
+            button: '生成问题分析',
+            direction: '先判断问题类型，再给处理建议',
+            output: '分析建议 / 回复草稿',
+            quicks: [
+                '我的商品被平台要求提供儿童产品证书，但它不是儿童玩具，应该怎么处理？',
+                '请帮我把这个平台提示解释成普通人能看懂的话。',
+                '请帮我判断这个商品问题应该走申诉、页面修改还是客服沟通。',
+                '请帮我整理一份适合提交给平台的说明材料。'
+            ]
+        },
+        appeal: {
+            name: '商品申诉',
+            title: '商品申诉处理',
+            subtitle: '适合商品被限制、下架、误判、要求补充资料时使用。',
+            formTitle: '申诉材料填写',
+            help: '填写商品名称、用途、平台限制原因。系统会整理申诉理由和申诉信草稿。',
+            issueLabel: '平台限制原因或申诉需求',
+            button: '生成申诉方案',
+            direction: '整理平台提示、商品用途、修改记录和申诉理由',
+            output: '申诉方案 + 申诉信草稿',
+            quicks: [
+                '请帮我生成一封商品申诉信，说明产品不是儿童玩具。',
+                '我的商品被平台限制销售，请帮我整理申诉思路。',
+                '请帮我把商品用途写得更像成人装饰品，而不是玩具。',
+                '请帮我写一段简短专业的平台申诉说明。'
+            ]
+        },
+        certificate: {
+            name: '证书误判',
+            title: '儿童产品证书误判分析',
+            subtitle: '适合成人装饰品、手工材料、小摆件等被平台误判为儿童产品的情况。',
+            formTitle: '证书误判材料填写',
+            help: '这里处理的是平台把商品误判为儿童产品，要求提交儿童产品证书的情况。',
+            issueLabel: '平台要求提供的资料或报错内容',
+            button: '生成误判分析',
+            direction: '强调非儿童玩具、成人用途、装饰用途、手工材料属性',
+            output: '误判分析 + 申诉说明',
+            quicks: [
+                '平台要求我提供儿童产品证书，但我的商品不是儿童玩具，怎么解释？',
+                '请帮我分析这个商品为什么可能被误判成儿童产品。',
+                '请帮我生成“成人使用、非儿童玩具”的说明。',
+                '请帮我整理给平台看的证书误判申诉理由。'
+            ]
+        },
+        page: {
+            name: '页面检查',
+            title: '商品页面检查',
+            subtitle: '检查标题、五点描述、详情页中是否有容易触发误判的词。',
+            formTitle: '商品页面内容填写',
+            help: '把标题、五点描述、详情页文字复制进来，系统会检查风险表达并给替换说法。',
+            issueLabel: '商品页面文字或需要检查的内容',
+            button: '检查页面风险',
+            direction: '检查是否存在儿童、玩具、礼物、学习等容易误判的表达',
+            output: '风险词列表 + 修改建议',
+            quicks: [
+                '请帮我检查商品页面是否容易被平台误判为儿童产品。',
+                '请帮我优化五点描述，避免被当成儿童玩具。',
+                '请帮我把标题改得更偏成人装饰和手工材料。',
+                '请列出页面里可能有风险的词，并给出替换说法。'
+            ]
+        },
+        email: {
+            name: '平台沟通邮件',
+            title: '平台沟通邮件生成',
+            subtitle: '适合生成平台沟通、人工复核、申诉补充说明等邮件草稿。',
+            formTitle: '沟通邮件材料填写',
+            help: '这里不是填写邮箱账号，而是填写邮件背景、沟通对象、平台提示和你想表达的内容。',
+            issueLabel: '邮件背景和想表达的内容',
+            button: '生成邮件草稿',
+            direction: '生成专业、简短、礼貌的平台沟通文本',
+            output: '平台沟通邮件草稿',
+            quicks: [
+                '请帮我生成一封简短专业的平台沟通邮件。',
+                '请帮我写一封请求人工复核的邮件。',
+                '请帮我把这段中文改成更专业的英文邮件。',
+                '请帮我生成一封补充说明邮件。'
+            ]
+        },
+        afterSale: {
+            name: '售后回复',
+            title: '售后回复助手',
+            subtitle: '适合处理客户差评、退款、物流延迟、破损补发等售后问题。',
+            formTitle: '售后情况填写',
+            help: '填写客户反馈内容和你希望的处理方式，系统会生成合适的客服回复。',
+            issueLabel: '客户反馈或售后问题',
+            button: '生成售后回复',
+            direction: '安抚客户、说明解决方案、降低差评风险',
+            output: '售后回复模板',
+            quicks: [
+                '客户说商品破损了，请帮我写一段礼貌的售后回复。',
+                '客户要求退款，请帮我写一段客服沟通话术。',
+                '客户给了差评，请帮我写一段挽回回复。',
+                '物流延迟了，请帮我写一段英文安抚客户的话。'
+            ]
+        }
+    };
+
+    function escapeHTML(text) {
+        return String(text)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function formatMessage(text) {
+        return escapeHTML(text).replace(/\n/g, '<br>');
+    }
+
+    function renderQuickButtons() {
+        const config = sceneConfig[currentScene];
+        quickArea.innerHTML = '';
+        config.quicks.forEach(text => {
+            const btn = document.createElement('button');
+            btn.className = 'quick-btn';
+            btn.textContent = text.length > 22 ? text.slice(0, 22) + '...' : text;
+            btn.title = text;
+            btn.onclick = () => quickAsk(text);
+            quickArea.appendChild(btn);
+        });
+    }
+
+    function renderSceneChat() {
+        chatMessages.querySelectorAll('.message-row').forEach(row => row.remove());
+
+        const messages = sceneChats[currentScene] || [];
+        if (emptyGuide) {
+            emptyGuide.style.display = messages.length === 0 ? 'block' : 'none';
+        }
+
+        messages.forEach(item => {
+            renderMessageOnly(item.sender, item.message);
+        });
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function selectScene(element, sceneKey) {
+        document.querySelectorAll('.scene-card').forEach(item => item.classList.remove('active'));
+        element.classList.add('active');
+
+        currentScene = sceneKey;
+        const config = sceneConfig[sceneKey];
+
+        taskTitle.textContent = config.title;
+        taskSubtitle.textContent = config.subtitle;
+        formTitle.textContent = config.formTitle;
+        formHelp.textContent = config.help;
+        issueLabel.textContent = config.issueLabel;
+        generateBtn.textContent = config.button;
+
+        dashboardScene.textContent = config.name;
+        dashboardAction.textContent = config.direction;
+        dashboardOutput.textContent = config.output;
+
+        userInput.placeholder = `当前场景：${config.name}，请输入你的问题...`;
+
+        renderQuickButtons();
+        renderSceneChat();
+        addLocalLog('切换业务场景', `已切换到：${config.name}`);
+    }
+
+    function renderMessageOnly(sender, message) {
+        const row = document.createElement('div');
+        row.className = sender === 'user' ? 'message-row user' : 'message-row assistant';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble';
+
+        const label = sender === 'user' ? '用户' : '智能客服';
+        bubble.innerHTML = `<div class="message-label">${label}</div>${formatMessage(message)}`;
+
+        row.appendChild(bubble);
+        chatMessages.appendChild(row);
+
+        if (sender !== 'user') {
+            lastAssistantText = message;
+        }
+    }
+
+    function addMessage(sender, message) {
+        if (emptyGuide) {
+            emptyGuide.style.display = 'none';
+        }
+
+        sceneChats[currentScene].push({ sender, message });
+        renderMessageOnly(sender, message);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function quickAsk(text) {
+        userInput.value = text;
+        sendMessage();
+    }
+
+    function buildSceneMessage(rawMessage) {
+        const itemNumber = document.getElementById('item-number-input').value.trim();
+        const productName = document.getElementById('product-name-input').value.trim();
+        const productUse = document.getElementById('product-use-input').value.trim();
+        const age = document.getElementById('age-input').value;
+        const issue = document.getElementById('issue-input').value.trim();
+
+        const materialBlock = `
+右侧已填写材料：
+平台商品编号：${itemNumber || '未填写'}
+商品名称：${productName || '未填写'}
+商品主要用途：${productUse || '未填写'}
+适合人群或年龄：${age || '未填写'}
+平台提示或需求：${issue || '未填写'}
+`;
+
+        const sceneInstructionMap = {
+            general: `
+当前业务场景：智能问答。
+处理要求：先判断用户问题属于商品申诉、证书误判、商品页面检查、沟通邮件还是售后回复，再给出简洁处理建议。
+输出格式：
+1. 问题类型
+2. 处理建议
+3. 需要补充的信息
+`,
+
+            appeal: `
+当前业务场景：商品申诉处理。
+处理要求：不要当成普通问答。请重点分析商品为什么被限制、下架或误判，并整理申诉理由。
+输出格式：
+1. 申诉问题类型
+2. 平台可能误判点
+3. 商品真实用途说明
+4. 建议补充的材料
+5. 可直接复制的申诉说明
+如果适合，请最后给一版英文申诉信。
+`,
+
+            certificate: `
+当前业务场景：儿童产品证书误判分析。
+处理要求：重点判断商品是否可能被误判为儿童产品。请围绕“非儿童玩具、成人使用、装饰用途、手工材料、收藏摆件”等方向分析。
+输出格式：
+1. 是否属于证书误判场景
+2. 误判原因
+3. 商品应如何重新表述
+4. 页面需要删除或替换的高风险词
+5. 给平台的中文说明
+6. 英文申诉信草稿
+`,
+
+            page: `
+当前业务场景：商品页面检查。
+处理要求：重点检查标题、五点描述、详情页中是否有容易导致平台误判的词。
+输出格式：
+1. 风险词或风险表达
+2. 为什么有风险
+3. 建议替换说法
+4. 修改后的标题或五点描述示例
+`,
+
+            email: `
+当前业务场景：平台沟通邮件生成。
+处理要求：根据用户背景生成专业、简短、礼貌的邮件。不要写成闲聊。
+输出格式：
+1. 中文邮件思路
+2. 英文邮件标题
+3. 英文邮件正文
+`,
+
+            afterSale: `
+当前业务场景：售后回复助手。
+处理要求：根据客户反馈生成礼貌、安抚型、解决问题导向的回复。
+输出格式：
+1. 客户问题判断
+2. 处理建议
+3. 中文回复模板
+4. 英文回复模板
+`
+        };
+
+        return `${sceneInstructionMap[currentScene]}
+
+${materialBlock}
+
+用户原始问题：
+${rawMessage}
+
+请结合当前业务场景回答。优先使用中文，除非需要生成英文邮件或英文申诉信。`;
+    }
+
+    async function retrieveKnowledgeContext(message) {
+        try {
+            const response = await fetch('/rag/search', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ query: message })
+            });
+
+            if (!response.ok) return '';
+
+            const data = await response.json();
+            if (!data || !data.context) return '';
+
+            return `
+
+以下是系统从知识库检索到的参考资料，请优先结合这些内容回答，不要机械照抄：
+${data.context}
+`;
+        } catch (error) {
+            return '';
+        }
+    }
+
+    async function sendMessage() {
+        const rawMessage = userInput.value.trim();
+        if (!rawMessage) return;
+
+        userInput.disabled = true;
+        sendBtn.disabled = true;
+        loadingIndicator.style.display = 'block';
+
+        try {
+            addMessage('user', rawMessage);
+            userInput.value = '';
+
+            let messageToBackend = buildSceneMessage(rawMessage);
+            const kbContext = await retrieveKnowledgeContext(rawMessage);
+            if (kbContext) {
+                messageToBackend += kbContext;
+                kbStatus.textContent = '本次回答已尝试参考知识库资料。';
+            }
+
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ message: messageToBackend })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                addMessage('assistant', `系统错误：${data.error}`);
+                addLocalLog('系统错误', data.error);
+            } else {
+                addMessage('assistant', data.response);
+                addLocalLog('生成回复', `场景：${sceneConfig[currentScene].name}\n问题：${rawMessage}`);
+            }
+        } catch (error) {
+            console.error(error);
+            addMessage('assistant', '系统处理失败，请稍后重试。');
+            addLocalLog('系统异常', String(error));
+        } finally {
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            loadingIndicator.style.display = 'none';
+            userInput.focus();
+            fetchOperationLog();
+        }
+    }
+
+    function generateScenePrompt() {
+        const config = sceneConfig[currentScene];
+
+        const itemNumber = document.getElementById('item-number-input').value.trim() || '未提供';
+        const productName = document.getElementById('product-name-input').value.trim() || '未提供';
+        const productUse = document.getElementById('product-use-input').value.trim() || '未提供';
+        const age = document.getElementById('age-input').value;
+        const issue = document.getElementById('issue-input').value.trim() || '未提供';
+
+        const prompt = `请按照“${config.name}”场景帮我处理这个跨境电商问题。
+
+平台商品编号：${itemNumber}
+商品名称：${productName}
+商品主要用途：${productUse}
+适合人群或年龄：${age}
+平台提示或我的需求：${issue}
+
+请输出：
+1. 问题属于什么类型
+2. 目前主要风险是什么
+3. 我应该补充哪些材料
+4. 商品页面需要注意什么
+5. 最后给出一段可以直接复制使用的回复或申诉草稿。`;
+
+        userInput.value = prompt;
+        sendMessage();
+    }
+
+    function clearChatMessages() {
+        if (!confirm('确定清空当前业务场景下的对话吗？')) return;
+
+        sceneChats[currentScene] = [];
+        chatMessages.querySelectorAll('.message-row').forEach(row => row.remove());
+
+        if (emptyGuide) {
+            emptyGuide.style.display = 'block';
+        }
+
+        lastAssistantText = '';
+        userInput.value = '';
+        addLocalLog('清空对话', `已清空：${sceneConfig[currentScene].name}`);
+    }
+
+    function clearMaterialForm() {
+        document.getElementById('item-number-input').value = '';
+        document.getElementById('product-name-input').value = '';
+        document.getElementById('product-use-input').value = '';
+        document.getElementById('age-input').value = '未说明';
+        document.getElementById('issue-input').value = '';
+        addLocalLog('清空材料表单', '右侧材料表单已清空。');
+    }
+
+    async function copyLastAnswer() {
+        if (!lastAssistantText) {
+            alert('当前还没有可复制的回复。');
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(lastAssistantText);
+            alert('最后一条回复已复制。');
+        } catch (error) {
+            alert('复制失败，请手动选择文本复制。');
+        }
+    }
+
+    async function uploadKnowledgeFile() {
+        const input = document.getElementById('kb-file-input');
+        if (!input.files || input.files.length === 0) {
+            alert('请先选择一个资料文件。');
+            return;
+        }
+
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        kbStatus.textContent = '正在上传并写入知识库...';
+
+        try {
+            const response = await fetch('/rag/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || data.error) {
+                kbStatus.textContent = `上传失败：${data.error || response.statusText}`;
+                addLocalLog('知识库上传失败', data.error || response.statusText);
+                return;
+            }
+
+            kbStatus.textContent = `上传成功：${data.filename || file.name}，已写入 ${data.chunks || 0} 条知识片段。`;
+            addLocalLog('知识库上传成功', `文件：${data.filename || file.name}\n片段数：${data.chunks || 0}`);
+        } catch (error) {
+            kbStatus.textContent = '上传失败：请确认后端已接入 rag_api.py，并已安装 python-multipart。';
+            addLocalLog('知识库上传异常', String(error));
+        }
+    }
+
+    async function checkPendingAction() {
+        try {
+            const response = await fetch('/pending-action');
+            const data = await response.json();
+
+            if (data.pending_action) {
+                let html = '<h4>待确认操作：</h4><ul>';
+                data.pending_action.tool_calls.forEach(toolCall => {
+                    html += `<li><strong>${escapeHTML(toolCall.name)}</strong>：${escapeHTML(JSON.stringify(toolCall.args))}</li>`;
+                });
+                html += '</ul>';
+                pendingActionDetails.innerHTML = html;
+                pendingActionModal.style.display = 'block';
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function approveAction() {
+        try {
+            const response = await fetch('/approve-action', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ decision: 'approve' })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                addMessage('assistant', `系统错误：${data.error}`);
+            } else {
+                addMessage('assistant', data.response);
+            }
+
+            pendingActionModal.style.display = 'none';
+        } catch (error) {
+            console.error(error);
+            addMessage('assistant', '确认操作时出现错误。');
+        }
+    }
+
+    async function rejectAction() {
+        try {
+            const response = await fetch('/reject-action', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ decision: 'reject' })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                addMessage('assistant', `系统错误：${data.error}`);
+            } else {
+                addMessage('assistant', data.response);
+            }
+
+            pendingActionModal.style.display = 'none';
+        } catch (error) {
+            console.error(error);
+            addMessage('assistant', '拒绝操作时出现错误。');
+        }
+    }
+
+    function addLocalLog(title, content) {
+        const timestamp = new Date().toLocaleTimeString();
+        const entry = document.createElement('div');
+        entry.className = 'log-entry local-log';
+        entry.innerHTML = `
+            <div class="log-title">${escapeHTML(title)}</div>
+            <div class="log-content">${escapeHTML(content)}</div>
+            <div class="log-timestamp">${escapeHTML(timestamp)}</div>
+        `;
+
+        const empty = operationLogContent.querySelector('.empty-log');
+        if (empty) empty.remove();
+
+        operationLogContent.prepend(entry);
+    }
+
+    async function fetchOperationLog() {
+        if (localLogCleared) return;
+
+        try {
+            const response = await fetch('/operation-log');
+            const data = await response.json();
+
+            if (data.error) {
+                if (!operationLogContent.innerHTML.trim()) {
+                    operationLogContent.innerHTML = `<div class="log-entry empty-log">记录读取失败：${escapeHTML(data.error)}</div>`;
+                }
+            } else {
+                displayOperationLog(data.operation_log);
+            }
+        } catch (error) {
+            if (!operationLogContent.innerHTML.trim()) {
+                operationLogContent.innerHTML = '<div class="log-entry empty-log">暂无处理记录</div>';
+            }
+        }
+    }
+
+    function displayOperationLog(logEntries) {
+        if (localLogCleared) return;
+
+        if (!logEntries || logEntries.length === 0) {
+            operationLogContent.innerHTML = '<div class="log-entry empty-log">暂无处理记录</div>';
+            return;
+        }
+
+        let html = '';
+        logEntries.forEach(entry => {
+            const timestamp = entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString() : '';
+            html += `
+                <div class="log-entry ${escapeHTML(entry.type || '')}">
+                    <div class="log-title">${escapeHTML(entry.title || '系统事件')}</div>
+                    <div class="log-content">${escapeHTML(entry.content || '')}</div>
+                    <div class="log-timestamp">${escapeHTML(timestamp)}</div>
+                </div>
+            `;
+        });
+
+        operationLogContent.innerHTML = html;
+    }
+
+    async function clearOperationLog() {
+        if (!confirm('确定清空右侧处理记录吗？')) return;
+
+        localLogCleared = true;
+        operationLogContent.innerHTML = '<div class="log-entry empty-log">处理记录已清空。</div>';
+
+        try {
+            await fetch('/operation-log/clear', { method: 'POST' });
+        } catch (error) {
+            // 如果后端没有清空接口，也不影响前端清空展示。
+        }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+
+    userInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    setInterval(checkPendingAction, 5000);
+    setInterval(fetchOperationLog, 10000);
+
+    renderQuickButtons();
+    fetchOperationLog();
+    userInput.focus();
+</script>
+</body>
+</html>
