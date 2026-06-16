@@ -1,7 +1,5 @@
 # 跨境电商智能客服处理台
 
-这是一个基于 **FastAPI + LangGraph + LangChain + RAG + Qdrant** 的跨境电商智能客服处理项目。
-
 项目主要用于帮助跨境电商卖家处理：
 
 - 商品申诉
